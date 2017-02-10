@@ -5,7 +5,7 @@ script.src=url;document.body.appendChild(script);}
 loadScript("js/app.js", function(){
 	
 	// Set Global Variables
-	var dataUrl = "http://api.football-data.org/v1", 
+	var dataUrl = App.settings.dataUrl, 
 	competitionData, 
 	competitionListUl = document.getElementById('competitions-list'),
 	competitionsList = [],
@@ -18,6 +18,7 @@ loadScript("js/app.js", function(){
 	chosenClubData,
 	chosenClubFixturesList = [],
 	fixturesHtmlContainer = document.getElementById("fixtures"),
+	clubName,
 	hiddenClass = ' hidden';
 	
 	// Get Competitions List
@@ -46,8 +47,9 @@ loadScript("js/app.js", function(){
 		clubHtmlContainer.className = '';
 		App.getData(dataUrl+'/competitions/'+e.target.dataset.leagueid+'/teams').then(function(response) {
 		  	clubData = JSON.parse(response);
+		  	console.log(clubData);
 	        for(var i=0;i<clubData.teams.length;i++){
-		        clubList.push('<li class="club" data-badge="'+clubData.teams[i].crestUrl+'" data-fixtures="'+clubData.teams[i]._links.fixtures.href+'">'+clubData.teams[i].name+'<button class="view-club small-button button grey-button">View</button><button class="follow-club small-button button">Follow</button></li>');
+		        clubList.push('<li class="club" data-name="'+clubData.teams[i].name+'" data-url="'+clubData.teams[i]._links.self.href+'">'+clubData.teams[i].name+'<button class="view-club small-button button grey-button">View</button><button class="follow-club small-button button">Follow</button></li>');
 		    }
 		    clubListOutput = clubList.join("");
 		    clubListUl.innerHTML = clubListOutput;
@@ -65,8 +67,8 @@ loadScript("js/app.js", function(){
 	});
 	
 	// Follow a Club
-	document.querySelector(".follow-club").addEventListener('click', function (e) {
-		console.log(this.parentNode);
+	clubListUl.addEventListener('click', function (e) {
+		App.addClub(e.target.parentNode.dataset.name,e.target.parentNode.dataset.url);
 	});
 	
 	/*clubListUl.addEventListener('click', function (e) {
